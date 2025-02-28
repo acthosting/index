@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #FFB6C1, #FF69B4);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        select,
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #f1f1f1;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #FF69B4;
+            outline: none;
+        }
+
+        button {
+            background-color: #FF69B4;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #FF1493;
+        }
+
+        #dynamic-text-boxes input {
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .text-box-container {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        // Existing subDefectCodes unchanged
+        const subDefectCodes = {
+            "Self_Declaration": [
+                "Buried Chamber",
+                "Tree cutting",
+                "Sagging",
+                "Fiber burnt",
+                "Loop clamp",
+                "SS Clamp",
+                "Ball marker",
+                "Lid correction",
+                "Pole bend/relocation",
+                "JE Rehab",
+                "Sand Filling",
+                "Chamber damage",
+                "NA",
+                "Others"
+            ],
+            "Civil_work": [
+                "Audit NC clearance",
+                "Buried Chamber Opening",
+                "Cable Laying/Pulling",
+                "Cable Saving",
+                "Chamber installation",
+                "Lid Installation/Replacement",
+                "LMC Correction",
+                "OH2UG",
+                "Raiser Installation",
+                "Temp 2 Permanent",
+                "Trenching",
+                "Unsafe Chamber",
+                "CC WORK"
+            ],
+            "Fiber_Cut": [
+                "Cluster/Community IBD Cable damaged",
+                "LMC Cut",
+                "UG CUT",
+                "UG OH CUT",
+                "UG Cable damaged"
+            ],
+            "Fiber_Error": [
+                "CRC",
+                "High Loss",
+                "Low Power",
+                "Port Flapping"
+            ],
+            "Intentional_Improper_Work": [
+                "JE Disturbed",
+                "TB Disturbed",
+                "Fiber Mismatch"
+            ],
+            "Planned_Activity": [
+                "Audit NC clearance",
+                "Buried Chamber Opening",
+                "Cable Laying/Pulling",
+                "Cable Saving",
+                "CCC - Scope identification",
+                "CCC Route Monitoring Link Clearance",
+                "Chamber Saving",
+                "Fiber Provision",
+                "JE rehab",
+                "LMC Correction",
+                "Locator support",
+                "Migration",
+                "Migration/Re-Location",
+                "Monitoring links",
+                "New route Survey",
+                "OH Laid",
+                "OH Rerouting",
+                "OH to UG Migration",
+                "Online Audit",
+                "Splicing/Straight joint",
+                "TB Rehab",
+                "Temp 2 Permanent",
+                "Temp to Perm Scope of work",
+                "Unsafe chamber",
+                "Scope Of Work"
+            ],
+            "RF_SME_IRU_COM_CORE": [
+                "Core Link",
+                "IRU-VIL",
+                "RF Link",
+                "SME Link",
+                "TCL Link",
+                "RCOM"
+            ],
+            "Single_Fiber_Break": [
+                "Ant bite",
+                "Cluster/Community IBD Cable damaged",
+                "EDFA Issue/Faulty/Rebooted",
+                "Fiber Mismatch",
+                "FMS Disturbed",
+                "JE Damaged",
+                "JE Disturbed",
+                "JE Disturbed O&M",
+                "JE Disturbed PM",
+                "JE Disturbed RR",
+                "LMC Cable Damaged/Disturb",
+                "NM IBD",
+                "Patch Chord Faulty/Issue",
+                "Rat Bite in Chamber",
+                "Rat Bite in FMS",
+                "SFB IN LMC TB",
+                "SFB JE",
+                "SFB UG",
+                "SFB UG OH",
+                "TB Disturbed",
+                "UG SFB",
+                "UGOH Cable Damaged"
+            ],
+            "Support_Function": [
+                "Fiber Provision",
+                "IOLM/OTDR support",
+                "Cable Laying/Pulling",
+                "Cable Saving",
+                "Chamber Saving",
+                "Civil Work",
+                "Dep-Migration Support",
+                "Locator support",
+                "NM OH Issue",
+                "NM Scope",
+                "Link down clearance",
+                "OH Rerouting",
+                "OH to UG Migration RR TEAM",
+                "Online Audit",
+                "Physical Audit",
+                "Route Survey",
+                "Scope Of Work",
+                "Splicing Support"
+            ]
+        };
+
+        function updateSubDefectCodes() {
+            const defectCodeSelect = document.getElementById("defect-code");
+            const subDefectCodeSelect = document.getElementById("sub-defect-code");
+            const selectedDefectCode = defectCodeSelect.value;
+
+            // Clear existing options
+            subDefectCodeSelect.innerHTML = "";
+
+            // Populate sub defect codes based on the selected defect code
+            if (subDefectCodes[selectedDefectCode]) {
+                subDefectCodes[selectedDefectCode].forEach(subDefect => {
+                    const option = document.createElement("option");
+                    option.value = subDefect;
+                    option.textContent = subDefect;
+                    subDefectCodeSelect.appendChild(option);
+                });
+            }
+        }
+
+        function generateTextBoxes() {
+            const numberOfBoxes = document.getElementById("number-of-boxes").value;
+            const container = document.getElementById("dynamic-text-boxes");
+            
+            // Clear existing text boxes
+            container.innerHTML = "";
+
+            // Create the specified number of text boxes
+            for (let i = 0; i < numberOfBoxes; i++) {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = `dynamic-input-${i + 1}`;
+                input.placeholder = `Dynamic Input ${i + 1}`;
+                container.appendChild(input);
+                container.appendChild(document.createElement("br")); // line break for spacing
+            }
+        }
+
+        function getLiveLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById("live-lat").value = position.coords.latitude;
+                    document.getElementById("live-long").value = position.coords.longitude;
+                }, function() {
+                    alert("Geolocation service failed. Please check your location settings.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Productivity Entery</h1>
+    <form>
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="zone">Zone:</label>
+        <select id="zone" name="zone">
+            <option value="South">South</option>
+            <option value="North">North</option>
+        </select>
+
+        <label for="shift">Shift:</label>
+        <select id="shift" name="shift">
+            <option value="Night">Night</option>
+            <option value="Day">Day</option>
+        </select>
+
+        <label for="tl-name">TL Name:</label>
+        <select id="tl-name" name="tl-name">
+            <option value="Praveen">Praveen</option>
+            <option value="Sivakumar L">Sivakumar L</option>
+            <option value="Pandiyan">Pandiyan</option>
+            <option value="Shashi Kumar.CC">Shashi Kumar.CC</option>
+        </select>
+
+        <label for="number-of-boxes">Enter number of text boxes:</label>
+        <input type="number" id="number-of-boxes" name="number-of-boxes" min="0" value="0">
+        <button type="button" onclick="generateTextBoxes()">Generate Text Boxes</button>
+
+        <div id="dynamic-text-boxes" class="text-box-container">
+            <!-- Dynamic text boxes will be generated here -->
+        </div>
+
+        <label for="live-lat">Live Latitude:</label>
+        <input type="text" id="live-lat" name="live-lat" placeholder="Live Latitude" readonly>
+
+        <label for="live-long">Live Longitude:</label>
+        <input type="text" id="live-long" name="live-long" placeholder="Live Longitude" readonly>
+
+        <button type="button" onclick="getLiveLocation()">Get Live Location</button>
+
+        <label for="fiberify-id">Fiberify ID:</label>
+        <input type="text" id="fiberify-id" name="fiberify-id" required>
+
+        <label for="temp-id-oh-id">Temp ID / OH ID:</label>
+        <input type="text" id="temp-id-oh-id" name="temp-id-oh-id">
+
+        <label for="route-type">Type of Route:</label>
+        <select id="route-type" name="route-type">
+            <option value="UG">UG</option>
+            <option value="UG-OH">UG-OH</option>
+            <option value="SOH">SOH</option>
+        </select>
+
+        <label for="defect-code">Defect Code:</label>
+        <select id="defect-code" name="defect-code" onchange="updateSubDefectCodes()">
+            <option value="Self_Declaration">Self_Declaration</option>
+            <option value="Civil_work">Civil_work</option>
+            <option value="Fiber_Cut">Fiber_Cut</option>
+            <option value="Fiber_Error">Fiber_Error</option>
+            <option value="Intentional_Improper_Work">Intentional_Improper_Work</option>
+            <option value="Planned_Activity">Planned_Activity</option>
+            <option value="RF_SME_IRU_COM_CORE">RF_SME_IRU_COM_CORE</option>
+            <option value="Single_Fiber_Break">Single_Fiber_Break</option>
+            <option value="Support_Function">Support_Function</option>
+        </select>
+
+        <label for="sub-defect-code">Sub Defect Code:</label>
+        <select id="sub-defect-code" name="sub-defect-code">
+            <!-- Sub defect codes will be populated based on the selected defect code -->
+        </select>
+
+        <label for="ne-name">Actual NE Name:</label>
+        <select id="ne-name" name="ne-name">
+            <option value="Davalasab_30697">Davalasab_30697</option>
+            <option value="Ramesh_27244">Ramesh_27244</option>
+            <option value="Shivashankar_32075">Shivashankar_32075</option>
+            <option value="Basavaraj_30170">Basavaraj_30170</option>
+            <option value="Ramanji_28276">Ramanji_28276</option>
+            <option value="Srinivasalu_31069">Srinivasalu_31069</option>
+            <option value="Kesavalu_27159">Kesavalu_27159</option>
+            <option value="Kotresh_28242">Kotresh_28242</option>
+            <option value="Chennakeshav_26990">Chennakeshav_26990</option>
+            <option value="Basavanagowda_26055">Basavanagowda_26055</option>
+            <option value="Mallikarjun Pujar_34285">Mallikarjun Pujar_34285</option>
+            <option value="Sachin Shirol ._28355">Sachin Shirol ._28355</option>
+            <option value="Vasantha Kumar K _31689">Vasantha Kumar K _31689</option>
+            <option value="Nachitha C_34573">Nachitha C_34573</option>
+            <option value="Mallikarjuna Sureshapppa Banakar _31097">Mallikarjuna Sureshapppa Banakar _31097</option>
+            <option value="Raghaveandra K R ._28755">Raghaveandra K R ._28755</option>
+            <option value="Ramu K S _26817">Ramu K S _26817</option>
+            <option value="Papasani Mallikarjunareddy_36613">Papasani Mallikarjunareddy_36613</option>
+            <option value="Balaji K _28354">Balaji K _28354</option>
+            <option value="Gangaraju G_32587">Gangaraju G_32587</option>
+            <option value="Sandeep _30298">Sandeep _30298</option>
+            <option value="Maruthi D _27713">Maruthi D _27713</option>
+            <option value="S Keshava _36879">S Keshava _36879</option>
+            <option value="Maruthi_38811">Maruthi_38811</option>
+        </select>
+
+        <label for="frt-civil-van">FRT / CIVIL / VAN:</label>
+        <select id="frt-civil-van" name="frt-civil-van">
+            <option value="FRT_BSW_24/7">FRT_BSW_24/7</option>
+            <option value="FRT_MLM_24/7">FRT_MLM_24/7</option>
+            <option value="FRT_NAB_24/7">FRT_NAB_24/7</option>
+            <option value="FRT_RTN_24/7">FRT_RTN_24/7</option>
+            <option value="FRT_YEL_24/7">FRT_YEL_24/7</option>
+            <option value="FRT_BLD_24/7">FRT_BLD_24/7</option>
+            <option value="FRT_BSK_24/7">FRT_BSK_24/7</option>
+            <option value="FRT_BTM_24/7">FRT_BTM_24/7</option>
+            <option value="FRT_IND_24/7">FRT_IND_24/7</option>
+            <option value="FRT_SAR_24/7">FRT_SAR_24/7</option>
+            <option value="SVT_Civil 2_12 Hrs">SVT_Civil 2_12 Hrs</option>
+            <option value="Civil_Civil 3_24/7">Civil_Civil 3_24/7</option>
+            <option value="Civil_Civil 1_12 Hrs">Civil_Civil 1_12 Hrs</option>
+            <option value="Civil_Civil 1_24/7">Civil_Civil 1_24/7</option>
+            <option value="Civil_Civil 2_12 Hrs">Civil_Civil 2_12 Hrs</option>
+            <option value="Civil_Civil 1_12 Hrs">Civil_Civil 1_12 Hrs</option>
+            <option value="Civil_Civil 2_12 Hrs">Civil_Civil 2_12 Hrs</option>
+            <option value="Van - OH _12 Hrs">Van - OH _12 Hrs</option>
+            <option value="SVT_BIKE_FRT">SVT_BIKE_FRT</option>
+            <option value="TP_BIKE_FRT">TP_BIKE_FRT</option>
+            <option value="MOHAN-NAB2_24/7">MOHAN-NAB2_24/7</option>
+            <option value="MOHAN - SAR_24/7">MOHAN - SAR_24/7</option>
+            <option value="MOHAN - CIVIL-24/7">MOHAN - CIVIL-24/7</option>
+            <option value="SRS-BLD/SAR">SRS-BLD/SAR</option>
+        </select>
+
+        <label for="route-id">Route ID:</label>
+        <input type="text" id="route-id" name="route-id">
+
+        <label for="route-name">Route Name:</label>
+        <input type="text" id="route-name" name="route-name">
+
+        <label for="chamber-id-a">Chamber ID A:</label>
+        <input type="text" id="chamber-id-a" name="chamber-id-a">
+
+        <label for="lat-long-a">Lat/Long A:</label>
+        <input type="text" id="lat-long-a" name="lat-long-a">
+
+        <label for="chamber-id-b">Chamber ID B:</label>
+        <input type="text" id="chamber-id-b" name="chamber-id-b">
+
+        <label for="lat-long-b">Lat/Long B:</label>
+        <input type="text" id="lat-long-b" name="lat-long-b">
+
+        <label for="gis-update">GIS Update:</label>
+        <input type="text" id="gis-update" name="gis-update">
+
+        <label for="reason-for-incident">Reason For Incident:</label>
+        <textarea id="reason-for-incident" name="reason-for-incident" rows="3"></textarea>
+
+        <label for="agency-for-cut">Agency for Cut:</label>
+        <input type="text" id="agency-for-cut" name="agency-for-cut">
+
+        <label for="agency-contact-number">Agency Contact Number:</label>
+        <input type="number" id="agency-contact-number" name="agency-contact-number">
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
