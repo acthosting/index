@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productivity</title>
-    <style>
+    <title>Form Submission</title>
+ <style>
         body {
             font-family: Arial, sans-serif;
             background: linear-gradient(to right, #FFB6C1, #FF69B4);
@@ -79,8 +79,8 @@
         }
     </style>
     <script>
-        // Existing subDefectCodes unchanged
-        const subDefectCodes = {
+
+const subDefectCodes = {
             "Self_Declaration": [
                 "Buried Chamber",
                 "Tree cutting",
@@ -212,8 +212,8 @@
         };
 
         function updateSubDefectCodes() {
-            const defectCodeSelect = document.getElementById("defect-code");
-            const subDefectCodeSelect = document.getElementById("sub-defect-code");
+            const defectCodeSelect = document.getElementById("defect_code");
+            const subDefectCodeSelect = document.getElementById("sub_defect_code");
             const selectedDefectCode = defectCodeSelect.value;
 
             // Clear existing options
@@ -230,9 +230,73 @@
             }
         }
 
+        function getLiveLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById("live_lat").value = position.coords.latitude;
+                    document.getElementById("live_long").value = position.coords.longitude;
+                }, function() {
+                    alert("Geolocation service failed. Please check your location settings.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        async function submitForm(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+	    const container = document.getElementById("links");
+            const inputs = container.getElementsByTagName("input");
+            const values = Array.from(inputs).map(input => input.value).filter(value => value);
+            const result = values.join(" | "); 
+
+            const date = document.getElementById('date').value;
+            const zone = document.getElementById('zone').value;
+            const shift = document.getElementById('shift').value;
+            const tl_name = document.getElementById('tl_name').value;
+            const live_lat = document.getElementById('live_lat').value;
+            const live_long = document.getElementById('live_long').value;
+            const fiberify_id = document.getElementById('fiberify_id').value;
+            const temp_id_oh_id = document.getElementById('temp_id_oh_id').value;
+            const route_type = document.getElementById('route_type').value;
+            const defect_code = document.getElementById('defect_code').value;
+            const sub_defect_code= document.getElementById('sub_defect_code').value;
+            const ne_name = document.getElementById('ne_name').value;
+            const frt_civil_van = document.getElementById('frt_civil_van').value;
+            const route_id = document.getElementById('route_id').value;
+            const route_name = document.getElementById('route_name').value;
+            const chamber_id_a = document.getElementById('chamber_id_a').value;
+            const lat_long_a = document.getElementById('lat_long_a').value;
+            const chamber_id_b = document.getElementById('chamber_id_b').value;
+            const lat_long_b = document.getElementById('lat_long_b').value;
+            const gis_update = document.getElementById('gis_update').value;
+            const reason_for_incident = document.getElementById('reason_for_incident').value;
+            const agency_for_cut = document.getElementById('agency_for_cut').value;
+            const agency_contact_number = document.getElementById('agency_contact_number').value;
+           const links = result;
+           const Total_Links = document.getElementById('Total_Links').value;
+
+
+            const response = await fetch('https://script.google.com/macros/s/AKfycbzGKQZBOaxZjRIYEo36GzwRrC080ByGGkQkvb7OSkHJc551VltIji9nuxuSZ4BrN9fV/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `date=${encodeURIComponent(date)}&zone=${encodeURIComponent(zone)}&shift=${encodeURIComponent(shift)}&tl_name=${encodeURIComponent(tl_name)}&tl_name=${encodeURIComponent(tl_name)}&live_lat=${encodeURIComponent(live_lat)}&live_long=${encodeURIComponent(live_long)}&fiberify_id=${encodeURIComponent(fiberify_id)}&temp_id_oh_id=${encodeURIComponent(temp_id_oh_id)}&route_type=${encodeURIComponent(route_type)}&defect_code=${encodeURIComponent(defect_code)}&ne_name=${encodeURIComponent(ne_name)}&frt_civil_van=${encodeURIComponent(frt_civil_van)}&route_id=${encodeURIComponent(route_id)}&route_name=${encodeURIComponent(route_name)}&chamber_id_a=${encodeURIComponent(chamber_id_a)}&lat_long_a=${encodeURIComponent(lat_long_a)}&chamber_id_b=${encodeURIComponent(chamber_id_b)}&lat_long_b=${encodeURIComponent(lat_long_b)}&gis_update=${encodeURIComponent(gis_update)}&reason_for_incident=${encodeURIComponent(reason_for_incident)}&agency_for_cut=${encodeURIComponent(agency_for_cut)}&agency_contact_number=${encodeURIComponent(agency_contact_number)}&Total_Links=${encodeURIComponent(Total_Links)}&links=${encodeURIComponent(links)}`
+            });
+
+            if (response.ok) {
+                alert('Submission successful!');
+                document.querySelector('form').reset();
+            } else {
+                alert('Submission failed.');
+            }
+        }
+
         function generateTextBoxes() {
-            const numberOfBoxes = document.getElementById("number-of-boxes").value;
-            const container = document.getElementById("dynamic-text-boxes");
+            const numberOfBoxes = document.getElementById("Total_Links").value;
+            const container = document.getElementById("links");
             
             // Clear existing text boxes
             container.innerHTML = "";
@@ -242,31 +306,19 @@
                 const input = document.createElement("input");
                 input.type = "text";
                 input.name = `dynamic-input-${i + 1}`;
-                input.placeholder = `Dynamic Input ${i + 1}`;
+                input.placeholder = `Links Input ${i + 1}`;
                 container.appendChild(input);
                 container.appendChild(document.createElement("br")); // line break for spacing
             }
         }
 
-        function getLiveLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    document.getElementById("live-lat").value = position.coords.latitude;
-                    document.getElementById("live-long").value = position.coords.longitude;
-                }, function() {
-                    alert("Geolocation service failed. Please check your location settings.");
-                });
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        }
     </script>
 </head>
 <body>
     <h1>Productivity Entery</h1>
-    <form>
+    <form id="myForm" onsubmit="submitForm(event)">
         <label for="date">Date:</label>
-        <input type="date" id="date" name="date" required>
+        <input type="date" id="date" name="date" >
 
         <label for="zone">Zone:</label>
         <select id="zone" name="zone">
@@ -280,45 +332,45 @@
             <option value="Day">Day</option>
         </select>
 
-        <label for="tl-name">TL Name:</label>
-        <select id="tl-name" name="tl-name">
+        <label for="tl_name">TL Name:</label>
+        <select id="tl_name" name="tl_name">
             <option value="Praveen">Praveen</option>
             <option value="Sivakumar L">Sivakumar L</option>
             <option value="Pandiyan">Pandiyan</option>
             <option value="Shashi Kumar.CC">Shashi Kumar.CC</option>
         </select>
 
-        <label for="number-of-boxes">Enter number of text boxes:</label>
-        <input type="number" id="number-of-boxes" name="number-of-boxes" min="0" value="0">
+        <label for="Total_Links">Enter The Number Of Links:</label>
+        <input type="number" id="Total_Links" name="Total_Links" min="0" value="0">
         <button type="button" onclick="generateTextBoxes()">Generate Text Boxes</button>
 
-        <div id="dynamic-text-boxes" class="text-box-container">
+        <div id="links" class="text-box-container">
             <!-- Dynamic text boxes will be generated here -->
         </div>
 
-        <label for="live-lat">Live Latitude:</label>
-        <input type="text" id="live-lat" name="live-lat" placeholder="Live Latitude" readonly>
+        <label for="live_lat">Live Latitude:</label>
+        <input type="text" id="live_lat" name="live_lat" placeholder="Live Latitude" readonly>
 
-        <label for="live-long">Live Longitude:</label>
-        <input type="text" id="live-long" name="live-long" placeholder="Live Longitude" readonly>
+        <label for="live_long">Live Longitude:</label>
+        <input type="text" id="live_long" name="live_long" placeholder="Live Longitude" readonly>
 
         <button type="button" onclick="getLiveLocation()">Get Live Location</button>
 
-        <label for="fiberify-id">Fiberify ID:</label>
-        <input type="text" id="fiberify-id" name="fiberify-id" required>
+        <label for="fiberify_id">Fiberify ID:</label>
+        <input type="text" id="fiberify_id" name="fiberify_id" >
 
-        <label for="temp-id-oh-id">Temp ID / OH ID:</label>
-        <input type="text" id="temp-id-oh-id" name="temp-id-oh-id">
+        <label for="temp_id_oh_id">Temp ID / OH ID:</label>
+        <input type="text" id="temp_id_oh_id" name="temp_id_oh_id">
 
-        <label for="route-type">Type of Route:</label>
-        <select id="route-type" name="route-type">
+        <label for="route_type">Type of Route:</label>
+        <select id="route_type" name="route_type">
             <option value="UG">UG</option>
             <option value="UG-OH">UG-OH</option>
             <option value="SOH">SOH</option>
         </select>
 
-        <label for="defect-code">Defect Code:</label>
-        <select id="defect-code" name="defect-code" onchange="updateSubDefectCodes()">
+        <label for="defect_code">Defect Code:</label>
+        <select id="defect_code" name="defect_code" onchange="updateSubDefectCodes()">
             <option value="Self_Declaration">Self_Declaration</option>
             <option value="Civil_work">Civil_work</option>
             <option value="Fiber_Cut">Fiber_Cut</option>
@@ -330,13 +382,12 @@
             <option value="Support_Function">Support_Function</option>
         </select>
 
-        <label for="sub-defect-code">Sub Defect Code:</label>
-        <select id="sub-defect-code" name="sub-defect-code">
+        <label for="sub_defect_code">Sub Defect Code:</label>
+        <select id="sub_defect_code" name="sub_defect_code">
             <!-- Sub defect codes will be populated based on the selected defect code -->
         </select>
 
-        <label for="ne-name">Actual NE Name:</label>
-        <select id="ne-name" name="ne-name">
+      <select id="ne_name" name="ne_name">
             <option value="Davalasab_30697">Davalasab_30697</option>
             <option value="Ramesh_27244">Ramesh_27244</option>
             <option value="Shivashankar_32075">Shivashankar_32075</option>
@@ -363,8 +414,8 @@
             <option value="Maruthi_38811">Maruthi_38811</option>
         </select>
 
-        <label for="frt-civil-van">FRT / CIVIL / VAN:</label>
-        <select id="frt-civil-van" name="frt-civil-van">
+        <label for="frt_civil_van">FRT / CIVIL / VAN:</label>
+        <select id="frt_civil_van" name="frt_civil_van">
             <option value="FRT_BSW_24/7">FRT_BSW_24/7</option>
             <option value="FRT_MLM_24/7">FRT_MLM_24/7</option>
             <option value="FRT_NAB_24/7">FRT_NAB_24/7</option>
@@ -391,35 +442,36 @@
             <option value="SRS-BLD/SAR">SRS-BLD/SAR</option>
         </select>
 
-        <label for="route-id">Route ID:</label>
-        <input type="text" id="route-id" name="route-id">
 
-        <label for="route-name">Route Name:</label>
-        <input type="text" id="route-name" name="route-name">
+        <label for="route_id">Route ID:</label>
+        <input type="text" id="route_id" name="route_id">
 
-        <label for="chamber-id-a">Chamber ID A:</label>
-        <input type="text" id="chamber-id-a" name="chamber-id-a">
+        <label for="route_name">Route Name:</label>
+        <input type="text" id="route_name" name="route_name">
 
-        <label for="lat-long-a">Lat/Long A:</label>
-        <input type="text" id="lat-long-a" name="lat-long-a">
+        <label for="chamber_id_a">Chamber ID A:</label>
+        <input type="text" id="chamber_id_a" name="chamber_id_a">
 
-        <label for="chamber-id-b">Chamber ID B:</label>
-        <input type="text" id="chamber-id-b" name="chamber-id-b">
+        <label for="lat_long_a">Lat/Long A:</label>
+        <input type="text" id="lat_long_a" name="lat_long_a">
 
-        <label for="lat-long-b">Lat/Long B:</label>
-        <input type="text" id="lat-long-b" name="lat-long-b">
+        <label for="chamber_id_b">Chamber ID B:</label>
+        <input type="text" id="chamber_id_b" name="chamber_id_b">
 
-        <label for="gis-update">GIS Update:</label>
-        <input type="text" id="gis-update" name="gis-update">
+        <label for="lat_long_b">Lat/Long B:</label>
+        <input type="text" id="lat_long_b" name="lat_long_b">
 
-        <label for="reason-for-incident">Reason For Incident:</label>
-        <textarea id="reason-for-incident" name="reason-for-incident" rows="3"></textarea>
+        <label for="gis_update">GIS Update:</label>
+        <input type="text" id="gis_update" name="gis_update">
 
-        <label for="agency-for-cut">Agency for Cut:</label>
-        <input type="text" id="agency-for-cut" name="agency-for-cut">
+        <label for="reason_for_incident">Reason For Incident:</label>
+        <textarea id="reason_for_incident" name="reason_for_incident" rows="3"></textarea>
 
-        <label for="agency-contact-number">Agency Contact Number:</label>
-        <input type="number" id="agency-contact-number" name="agency-contact-number">
+        <label for="agency_for_cut">Agency for Cut:</label>
+        <input type="text" id="agency_for_cut" name="agency_for_cut">
+
+        <label for="agency_contact_number">Agency Contact Number:</label>
+        <input type="number" id="agency_contact_number" name="agency_contact_number" >
 
         <button type="submit">Submit</button>
     </form>
