@@ -243,57 +243,64 @@ const subDefectCodes = {
             }
         }
 
-        async function submitForm(event) {
-            event.preventDefault(); // Prevent the default form submission
+async function submitForm(event) {
+    event.preventDefault(); // Prevent default form submission
 
-	    const container = document.getElementById("links");
-            const inputs = container.getElementsByTagName("input");
-            const values = Array.from(inputs).map(input => input.value).filter(value => value);
-            const result = values.join(" | "); 
+    const container = document.getElementById("links");
+    const inputs = container.getElementsByTagName("input");
+    const values = Array.from(inputs).map(input => input.value).filter(value => value); // Get all input values
+    
+    // Debug: Check if the input retrieval is working correctly
+    console.log("Retrieved link values:", values);
+    
+    const date = document.getElementById('date').value;
+    const zone = document.getElementById('zone').value;
+    const shift = document.getElementById('shift').value;
+    const tl_name = document.getElementById('tl_name').value;
+    const live_lat = document.getElementById('live_lat').value;
+    const live_long = document.getElementById('live_long').value;
+    const fiberify_id = document.getElementById('fiberify_id').value;
+    const temp_id_oh_id = document.getElementById('temp_id_oh_id').value;
+    const route_type = document.getElementById('route_type').value;
+    const defect_code = document.getElementById('defect_code').value;
+    const sub_defect_code = document.getElementById('sub_defect_code').value;
+    const ne_name = document.getElementById('ne_name').value;
+    const frt_civil_van = document.getElementById('frt_civil_van').value;
+    const route_id = document.getElementById('route_id').value;
+    const route_name = document.getElementById('route_name').value;
+    const chamber_id_a = document.getElementById('chamber_id_a').value;
+    const lat_long_a = document.getElementById('lat_long_a').value;
+    const chamber_id_b = document.getElementById('chamber_id_b').value;
+    const lat_long_b = document.getElementById('lat_long_b').value;
+    const gis_update = document.getElementById('gis_update').value;
+    const reason_for_incident = document.getElementById('reason_for_incident').value;
+    const agency_for_cut = document.getElementById('agency_for_cut').value;
+    const agency_contact_number = document.getElementById('agency_contact_number').value;
+    const Total_Links = document.getElementById('Total_Links').value;
 
-            const date = document.getElementById('date').value;
-            const zone = document.getElementById('zone').value;
-            const shift = document.getElementById('shift').value;
-            const tl_name = document.getElementById('tl_name').value;
-            const live_lat = document.getElementById('live_lat').value;
-            const live_long = document.getElementById('live_long').value;
-            const fiberify_id = document.getElementById('fiberify_id').value;
-            const temp_id_oh_id = document.getElementById('temp_id_oh_id').value;
-            const route_type = document.getElementById('route_type').value;
-            const defect_code = document.getElementById('defect_code').value;
-            const sub_defect_code= document.getElementById('sub_defect_code').value;
-            const ne_name = document.getElementById('ne_name').value;
-            const frt_civil_van = document.getElementById('frt_civil_van').value;
-            const route_id = document.getElementById('route_id').value;
-            const route_name = document.getElementById('route_name').value;
-            const chamber_id_a = document.getElementById('chamber_id_a').value;
-            const lat_long_a = document.getElementById('lat_long_a').value;
-            const chamber_id_b = document.getElementById('chamber_id_b').value;
-            const lat_long_b = document.getElementById('lat_long_b').value;
-            const gis_update = document.getElementById('gis_update').value;
-            const reason_for_incident = document.getElementById('reason_for_incident').value;
-            const agency_for_cut = document.getElementById('agency_for_cut').value;
-            const agency_contact_number = document.getElementById('agency_contact_number').value;
-           const links = result;
-           const Total_Links = document.getElementById('Total_Links').value;
+    // Loop through each link and submit one by one
+    for (const link of values) {
+	let links = link;
+        console.log(`Submitting link: ${link}`); // Debug: Log which link is being submitted
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzGKQZBOaxZjRIYEo36GzwRrC080ByGGkQkvb7OSkHJc551VltIji9nuxuSZ4BrN9fV/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `date=${encodeURIComponent(date)}&zone=${encodeURIComponent(zone)}&shift=${encodeURIComponent(shift)}&tl_name=${encodeURIComponent(tl_name)}&tl_name=${encodeURIComponent(tl_name)}&live_lat=${encodeURIComponent(live_lat)}&live_long=${encodeURIComponent(live_long)}&fiberify_id=${encodeURIComponent(fiberify_id)}&temp_id_oh_id=${encodeURIComponent(temp_id_oh_id)}&route_type=${encodeURIComponent(route_type)}&defect_code=${encodeURIComponent(defect_code)}&ne_name=${encodeURIComponent(ne_name)}&frt_civil_van=${encodeURIComponent(frt_civil_van)}&route_id=${encodeURIComponent(route_id)}&route_name=${encodeURIComponent(route_name)}&chamber_id_a=${encodeURIComponent(chamber_id_a)}&lat_long_a=${encodeURIComponent(lat_long_a)}&chamber_id_b=${encodeURIComponent(chamber_id_b)}&lat_long_b=${encodeURIComponent(lat_long_b)}&gis_update=${encodeURIComponent(gis_update)}&reason_for_incident=${encodeURIComponent(reason_for_incident)}&agency_for_cut=${encodeURIComponent(agency_for_cut)}&agency_contact_number=${encodeURIComponent(agency_contact_number)}&Total_Links=${encodeURIComponent(Total_Links)}&links=${encodeURIComponent(links)}`
+        });
 
-
-            const response = await fetch('1https://script.google.com/macros/s/AKfycbzGKQZBOaxZjRIYEo36GzwRrC080ByGGkQkvb7OSkHJc551VltIji9nuxuSZ4BrN9fV/exec', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `date=${encodeURIComponent(date)}&zone=${encodeURIComponent(zone)}&shift=${encodeURIComponent(shift)}&tl_name=${encodeURIComponent(tl_name)}&tl_name=${encodeURIComponent(tl_name)}&live_lat=${encodeURIComponent(live_lat)}&live_long=${encodeURIComponent(live_long)}&fiberify_id=${encodeURIComponent(fiberify_id)}&temp_id_oh_id=${encodeURIComponent(temp_id_oh_id)}&route_type=${encodeURIComponent(route_type)}&defect_code=${encodeURIComponent(defect_code)}&ne_name=${encodeURIComponent(ne_name)}&frt_civil_van=${encodeURIComponent(frt_civil_van)}&route_id=${encodeURIComponent(route_id)}&route_name=${encodeURIComponent(route_name)}&chamber_id_a=${encodeURIComponent(chamber_id_a)}&lat_long_a=${encodeURIComponent(lat_long_a)}&chamber_id_b=${encodeURIComponent(chamber_id_b)}&lat_long_b=${encodeURIComponent(lat_long_b)}&gis_update=${encodeURIComponent(gis_update)}&reason_for_incident=${encodeURIComponent(reason_for_incident)}&agency_for_cut=${encodeURIComponent(agency_for_cut)}&agency_contact_number=${encodeURIComponent(agency_contact_number)}&Total_Links=${encodeURIComponent(Total_Links)}&links=${encodeURIComponent(links)}`
-            });
-
-            if (response.ok) {
-                alert('Submission successful!');
-                document.querySelector('form').reset();
-            } else {
-                alert('Submission failed.');
-            }
+        if (response.ok) {
+            console.log(`Submission of link "${link}" successful!`);
+        } else {
+            console.error(`Submission of link "${link}" failed.`);
         }
+    }
 
+    // Reset the form after processing all links
+               alert('Submission successful!');
+    document.querySelector('form').reset();
+}
         function generateTextBoxes() {
             const numberOfBoxes = document.getElementById("Total_Links").value;
             const container = document.getElementById("links");
